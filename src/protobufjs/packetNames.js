@@ -1,13 +1,14 @@
 export const PacketNames = {
     common : {
-        Packet : 'common.Packet'
+        Packet : 'common.Packet',
+        Ping : `common.Ping`
     },
     response : {
         Response : 'response.Response'
     },
     game : {
-        game : 'game.CreateGamePayload',
-        join : 'game.JoinGamePayload'
+        CreateGamePayload : 'game.CreateGamePayload',
+        JoinGamePayload : 'game.JoinGamePayload'
     },
     initial : {
         InitialPacket : 'initial.InitialPacket'

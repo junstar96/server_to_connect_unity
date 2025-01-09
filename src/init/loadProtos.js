@@ -48,6 +48,7 @@ export const loadProtos = async () => {
       }
     }
 
+    console.log(protoMessages);
     console.log('Protobuf 파일이 로드되었습니다.');
   } catch (error) {
     console.error('Protobuf 파일 로드 중 오류가 발생했습니다:', error);
@@ -56,6 +57,6 @@ export const loadProtos = async () => {
 
 // 로드된 프로토 메시지들의 얕은 복사본을 반환합니다.
 export const getProtoMessages = () => {
-  console.log('protoMessages:', protoMessages); // 디버깅을 위해 추가
+  //console.log('protoMessages:', protoMessages); // 디버깅을 위해 추가
   return { ...protoMessages };
 };

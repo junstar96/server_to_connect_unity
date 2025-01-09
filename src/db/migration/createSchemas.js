@@ -22,7 +22,7 @@ const createSchemas = async () => {
   const sqlDir = path.join(__dirname, '../sql');
   try {
     // USER_DB SQL 파일 실행
-    await executeSqlFile(pools.GAME_DB, path.join(sqlDir, 'user_db.sql'));
+    await executeSqlFile(pools.USER_DB, path.join(sqlDir, 'user_db.sql'));
 
     console.log('데이터베이스 테이블이 성공적으로 생성되었습니다.');
   } catch (error) {

@@ -1,15 +1,20 @@
 import net from 'net';
 import { getProtoMessages, loadProtos } from '../init/loadProtos.js';
+import { config } from '../config/config.js';
 
 const TOTAL_LENGTH = 4; // 전체 길이를 나타내는 4바이트
 const PACKET_TYPE_LENGTH = 1; // 패킷타입을 나타내는 1바이트
 
 let userId;
 let sequence;
+const deviceId = 'xxxx1x';
 
 const createPacket = (handlerId, payload, clientVersion = '1.0.0', type, name) => {
   const protoMessages = getProtoMessages();
+  console.log("!!!!!!!!!!!!!!!!!",type, name);
+  console.log(protoMessages[type]);
   const PayloadType = protoMessages[type][name];
+  console.log(`protoType : ${PayloadType}`);
 
   if (!PayloadType) {
     throw new Error('PayloadType을 찾을 수 없습니다.');
@@ -20,7 +25,7 @@ const createPacket = (handlerId, payload, clientVersion = '1.0.0', type, name) =
 
   return {
     handlerId,
-    userId: '1',
+    userId,
     clientVersion,
     sequence: 0,
     payload: payloadBuffer,
@@ -52,18 +57,31 @@ const sendPacket = (socket, packet) => {
 };
 
 // 서버에 연결할 호스트와 포트
-const HOST = process.env.HOST;
-const PORT = process.env.PORT;
+const HOST = config.server.host;
+const PORT = config.server.port;
 
 const client = new net.Socket();
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 client.connect(PORT, HOST, async () => {
   console.log('Connected to server');
   await loadProtos();
 
-  const successPacket = createPacket(0, { deviceId: 'xxxxx' }, '1.0.0', 'initial', 'InitialPacket');
+  const successPacket = createPacket(0, { deviceId }, '1.0.0', 'initial', 'InitialPacket');
 
-  sendPacket(client, successPacket);
+  await sendPacket(client, successPacket);
+  await delay(500);
+
+  const createGamePacket = createPacket(
+    4,
+    { timestamp: Date.now() },
+    '1.0.0',
+    'game',
+    'CreateGamePayload',
+  );
+
+  await sendPacket(client, createGamePacket);
 });
 
 client.on('data', (data) => {
@@ -73,7 +91,7 @@ client.on('data', (data) => {
 
   // 2. 패킷 타입 정보 수신 (1바이트)
   const packetType = data.readUInt8(4);
-  const packet = data.slice(totalHeaderLength, length); // 패킷 데이터
+  const packet = data.slice(totalHeaderLength, totalHeaderLength + length); // 패킷 데이터
 
   if (packetType === 1) {
     const protoMessages = getProtoMessages();
@@ -81,13 +99,11 @@ client.on('data', (data) => {
 
     try {
       const response = Response.decode(packet);
-
+      const responseData = JSON.parse(Buffer.from(response.data).toString());
       if (response.handlerId === 0) {
-        const responseData = JSON.parse(Buffer.from(response.data).toString());
-
         userId = responseData.userId;
-        console.log('응답 데이터:', responseData);
       }
+      console.log('응답 데이터:', responseData);
       sequence = response.sequence;
     } catch (e) {
       console.log(e);
@@ -101,4 +117,10 @@ client.on('close', () => {
 
 client.on('error', (err) => {
   console.error('Client error:', err);
+});
+
+process.on('SIGINT', () => {
+    client.end('클라이언트가 종료됩니다.', () => {
+        process.exit(0);
+    });
 });
