@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message Person {
+    string name = 1;
+    int32 id = 2;
+    string email = 3;
+};
+
+message Packet {
+    uint32 handlerId = 1;
+    string userId = 2;
+    string clientVersion = 3;
+    uint32 sequence = 4;
+    bytes payload = 5;
+};
+
