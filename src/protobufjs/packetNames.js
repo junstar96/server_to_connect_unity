@@ -5,7 +5,11 @@ export const PacketNames = {
     response : {
         Response : 'response.Response'
     },
+    game : {
+        game : 'game.CreateGamePayload',
+        join : 'game.JoinGamePayload'
+    },
     initial : {
-        InitialPacket : ''
+        InitialPacket : 'initial.InitialPacket'
     }
 }

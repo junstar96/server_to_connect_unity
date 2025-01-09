@@ -15,4 +15,5 @@ const testAllConnections = async (pools) => {
     await testConn(pools.USER_DB, 'USER_DB');
 }
 
+
 export default testAllConnections;

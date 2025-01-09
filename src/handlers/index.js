@@ -1,28 +1,20 @@
 import { HANDLER_IDS } from "../constants/handlerids.js";
-
- 
-export const getHandlerById = (handlerid) => {
-    if(!handlers[handlerid])
-    {
-        console.error(`핸들 아이디 못 찾음, ${handlerid}`)
-    }
-
-    return handlers[handlerid].handler;
-}
-
-export const getProtoTypeNameByHandlerId = (handlerid) =>{
-    if(!handlers[handlerid])
-    {
-        console.error(`핸들 아이디 못 찾음, ${handlerid}`)
-    }
-
-    return handlers[handlerid].prototype;
-}
+import createGameHandler from "./game/createGame.handler.js";
+import joinGameHandler from "./game/joinGame.handler.js";
+import { getHandlerById } from "./initial.handler.js";
 
 const handlers = {
    [HANDLER_IDS.INITIAL] : {
     handler : getHandlerById,
     prototype : 'initial.InitialPacket'
+   },
+   [HANDLER_IDS.CREATE_GAME] : {
+    handler : createGameHandler,
+    prototype : 'game.CreateGamePayload'
+   },
+   [HANDLER_IDS.JOIN_GAME] : {
+    handler : joinGameHandler,
+    prototype : 'game.JoinGamePayload'
    }
 };
 
