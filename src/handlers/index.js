@@ -3,20 +3,10 @@ import createGameHandler from "./game/createGame.handler.js";
 import joinGameHandler from "./game/joinGame.handler.js";
 
 export const getHandlerById = (handlerid) => {
-   console.log("핸들 아이디 : ",handlerid)
-   if(!handlers[handlerid])
-   {
-       console.error(`핸들 아이디 못 찾음, ${handlerid}`)
-   }
-
    return handlers[handlerid].handler;
 }
 
 export const getProtoTypeNameByHandlerId = (handlerid) =>{
-   if(!handlers[handlerid])
-   {
-       console.error(`핸들 아이디 못 찾음, ${handlerid}`)
-   }
 
    return handlers[handlerid].prototype;
 }

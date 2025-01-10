@@ -26,8 +26,13 @@ export const onData = (socket) => async (data) => {
     // 3. 패킷 전체 길이 확인 후 데이터 수신
     if (socket.buffer.length >= length) {
       // 패킷 데이터를 자르고 버퍼에서 제거
-      const packet = socket.buffer.slice(totalHeaderLength, length);
-      socket.buffer = socket.buffer.slice(length);
+      const packet = socket.buffer.subarray(totalHeaderLength, length);
+      socket.buffer = socket.buffer.subarray(length);
+
+      console.log(`length: ${length}`);
+      console.log(`packetType: ${packetType}`);
+      console.log(packet);
+
 
       try {
         switch (packetType) {
@@ -58,11 +63,17 @@ export const onData = (socket) => async (data) => {
             }
 
             const handler = getHandlerById(handlerId);
-            await handler({
-              socket,
-              userId,
-              payload,
-            });
+
+            if(handlerId != 0)
+            {
+              await handler({
+
+                socket,
+                userId,
+                payload,
+              });
+            }
+            
         }
       } catch (error) {
         handleError(socket, error);

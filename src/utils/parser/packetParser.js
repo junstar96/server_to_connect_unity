@@ -21,7 +21,11 @@ export const packetParser = (data) => {
   const clientVersion = packet.clientVersion;
   const sequence = packet.sequence;
 
-  
+  console.log(`데이터 확인 여기는 parser, ${handlerId}`);
+  console.log(`데이터 확인 여기는 parser, ${userId}`);
+  console.log(`데이터 확인 여기는 parser, ${sequence}`);
+
+
 
   // clientVersion 검증
   if (clientVersion !== config.client.version) {
