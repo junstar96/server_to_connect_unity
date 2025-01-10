@@ -1,5 +1,5 @@
 import { getProtoMessages } from '../../init/loadProtos.js';
-import { getProtoTypeNameByHandlerId } from '../../handlers/initial.handler.js';
+import { getProtoTypeNameByHandlerId } from '../../handlers/index.js';
 import { config } from '../../config/config.js';
 import CustomError from '../error/customError.js';
 import { ErrorCodes } from '../error/errorCodes.js';
@@ -20,6 +20,8 @@ export const packetParser = (data) => {
   const userId = packet.userId;
   const clientVersion = packet.clientVersion;
   const sequence = packet.sequence;
+
+  
 
   // clientVersion 검증
   if (clientVersion !== config.client.version) {
@@ -55,6 +57,6 @@ export const packetParser = (data) => {
       `필수 필드가 누락되었습니다: ${missingFields.join(', ')}`,
     );
   }
-
+  console.log(`데이터 확인, ${handlerId}, ${userId}, ${clientVersion}, ${sequence}`)
   return { handlerId, userId, payload, sequence };
 };

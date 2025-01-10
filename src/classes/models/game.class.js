@@ -1,42 +1,73 @@
-const MAX_PLAYERS = 4;
+import IntervalManager from '../managers/interval.manager.js';
+import {
+  createLocationPacket,
+  gameStartNotification,
+} from '../../utils/notification/game.notification.js';
+
+const MAX_PLAYERS = 1;
 
 class Game {
-    constructor(id)
-    {
-        this.id = id;
-        this.users = [];
-        this.state = 'waiting'; // 'waiting', 'inProgress'
-    }
+  constructor(id) {
+    this.id = id;
+    this.users = [];
+    this.intervalManager = new IntervalManager();
+    this.state = 'waiting'; // 'waiting', 'inProgress'
+  }
 
-    addUser() {
-        if(this.users.length >= MAX_PLAYERS)
-        {
-            throw new Error('게임 세션이 가득 참')
-        }
-
-        if(this.users.length == MAX_PLAYERS)
-        {
-            setTimeout(() => {
-                this.startGame();
-            }, 3000);
-        }
+  addUser(user) {
+    if (this.users.length >= MAX_PLAYERS) {
+      throw new Error('Game session is full');
     }
+    this.users.push(user);
 
-    getUser(userid) {
-        return this.users.find((user)=>user.id == userid);
+    this.intervalManager.addPlayer(user.id, user.ping.bind(user), 1000);
+    if (this.users.length === MAX_PLAYERS) {
+      setTimeout(() => {
+        this.startGame();
+      }, 3000);
     }
+  }
 
-    removeUser(userid){
-        this.users = this.users.filter((user)=>user.id !== userid);
-        if(this.users.length < MAX_PLAYERS)
-        {
-            this.state = 'waiting';
-        }
-    }
+  getUser(userId) {
+    return this.users.find((user) => user.id === userId);
+  }
 
-    startGame(){
-        this.state = 'inProgress';
+  removeUser(userId) {
+    this.users = this.users.filter((user) => user.id !== userId);
+    this.intervalManager.removePlayer(userId);
+
+    if (this.users.length < MAX_PLAYERS) {
+      this.state = 'waiting';
     }
+  }
+
+  getMaxLatency() {
+    let maxLatency = 0;
+    this.users.forEach((user) => {
+      maxLatency = Math.max(maxLatency, user.latency);
+    });
+    return maxLatency;
+  }
+
+  startGame() {
+    this.state = 'inProgress';
+    const startPacket = gameStartNotification(this.id, Date.now());
+    console.log(this.getMaxLatency());
+
+    this.users.forEach((user) => {
+      user.socket.write(startPacket);
+    });
+  }
+
+  getAllLocation() {
+    const maxLatency = this.getMaxLatency();
+
+    const locationData = this.users.map((user) => {
+      const { x, y } = user.calculatePosition(maxLatency);
+      return { id: user.id, x, y };
+    });
+    return createLocationPacket(locationData);
+  }
 }
 
 export default Game;

@@ -12,5 +12,9 @@ export const PacketNames = {
     },
     initial : {
         InitialPacket : 'initial.InitialPacket'
+    },
+    gameNotification: {
+        LocationUpdate : 'gameNotification.LocationUpdate',
+        Start : 'gameNotification.Start'
     }
 }
