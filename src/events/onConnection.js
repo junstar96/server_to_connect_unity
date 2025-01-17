@@ -8,7 +8,6 @@ export const onConnection = (socket) => {
 
     //각 클라이언트마다 고유 버퍼를 유지하기 위함
     socket.buffer = Buffer.alloc(0);
-    
 
     //데이터를 집어 넣는다는 의미
     socket.on('data', onData(socket));

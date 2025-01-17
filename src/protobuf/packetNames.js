@@ -1,4 +1,4 @@
-export const PacketNames = {
+export const packetNames = {
     common : {
         Packet : 'common.Packet',
         Ping : `common.Ping`

@@ -9,7 +9,6 @@ import { ErrorCodes } from '../utils/error/errorCodes.js';
 import { getProtoMessages } from '../init/loadProtos.js';
 
 export const onData = (socket) => async (data) => {
-  console.log("호------------출")
   // 기존 버퍼에 새로 수신된 데이터를 추가
   socket.buffer = Buffer.concat([socket.buffer, data]);
 
@@ -29,11 +28,6 @@ export const onData = (socket) => async (data) => {
       const packet = socket.buffer.subarray(totalHeaderLength, length);
       socket.buffer = socket.buffer.subarray(length);
 
-      console.log(`length: ${length}`);
-      console.log(`packetType: ${packetType}`);
-      console.log(packet);
-
-
       try {
         switch (packetType) {
           case PACKET_TYPE.PING:
@@ -45,16 +39,12 @@ export const onData = (socket) => async (data) => {
               if (!user) {
                 throw new CustomError(ErrorCodes.USER_NOT_FOUND, '유저를 찾을 수 없습니다.');
               }
+              console.log("핑 확인")
               user.handlePong(pingMessage);
             }
             break;
           case PACKET_TYPE.NORMAL:
-            const { handlerId, userId, payload, sequence } = packetParser(packet);
-
-            console.log(`데이터 확인 여기는 Data, ${handlerId}`);
-            console.log(`데이터 확인 여기는 Data, ${userId}`);
-            console.log(`데이터 확인 여기는 Data, ${payload}`);
-            console.log(`데이터 확인 여기는 Data, ${sequence}`);
+            const { handlerId, sequence, payload, userId } = packetParser(packet);
 
             const user = getUserById(userId);
             // 유저가 접속해 있는 상황에서 시퀀스 검증
@@ -62,18 +52,14 @@ export const onData = (socket) => async (data) => {
               throw new CustomError(ErrorCodes.INVALID_SEQUENCE, '잘못된 호출 값입니다. ');
             }
 
+            console.log(`${handlerId}, ${sequence}, ${payload}, ${userId}`);
+
             const handler = getHandlerById(handlerId);
-
-            if(handlerId != 0)
-            {
-              await handler({
-
-                socket,
-                userId,
-                payload,
-              });
-            }
-            
+            await handler({
+              socket,
+              userId,
+              payload,
+            });
         }
       } catch (error) {
         handleError(socket, error);

@@ -12,6 +12,8 @@ const createGameHandler = ({ socket, userId, payload }) => {
     const gameId = uuidv4();
     const gameSession = addGameSession(gameId);
 
+    console.log("게임 쪽 생성")
+
     const user = getUserById(userId);
     if (!user) {
       throw new CustomError(ErrorCodes.USER_NOT_FOUND, '유저를 찾을 수 없습니다.');
@@ -24,7 +26,8 @@ const createGameHandler = ({ socket, userId, payload }) => {
       { gameId, message: '게임이 생성되었습니다.' },
       userId,
     );
-
+    console.log("게임 쪽 생성 확인1");
+    console.log("createGameResponse : ", createGameResponse);
     socket.write(createGameResponse);
   } catch (error) {
     handleError(socket, error);

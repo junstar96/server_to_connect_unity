@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server/server.js",
-    "cla": "node src/client/client.js",
+    "dev": "nodemon src/server.js",
+    "cla": "node client.js",
     "migrate" : "node src/db/migration/createSchemas.js"
   },
   "keywords": [],

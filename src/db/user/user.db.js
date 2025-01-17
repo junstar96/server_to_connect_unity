@@ -1,6 +1,6 @@
-import pools from "../database"
+import pools from "../database.js"
 import { v4 as uuidv4 } from "uuid";
-import { SQL_OVERIES } from "./user.query"
+import { SQL_OVERIES } from "./user.query.js"
 import { toCamelCase } from "../../utils/transformFromCamel.js";
 
 export const findUserByDeviceID = async (deviceid) => {
@@ -14,6 +14,7 @@ export const createUser = async (deviceid) => {
     return {id, deviceid};
 }
 
-export const updateUserlogin = async () => {
-    await pools.USER_DB.query(SQL_OVERIES.UPDATE_USER_LOGIN [id]);
+export const updateUserlogin = async (id) => {
+    await pools.USER_DB.query(SQL_OVERIES.UPDATE_USER_LOGIN, [id]);
 }
+
